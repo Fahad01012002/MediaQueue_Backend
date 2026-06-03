@@ -88,6 +88,29 @@ const run = async () => {
             res.send(result);
         });
 
+        app.patch('/my-tutors/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateData = req.body;
+            delete updateData._id;
+            const query = { _id: new ObjectId(id) };
+            const update = { $set: updateData };
+            const studentTutorsData = await studentTutotrsCollection.updateOne(query, update);
+            const tutorsData = await tutorsCollection.updateOne(query, update);
+            res.json({
+                success: true,
+                modifiedCount: studentTutorsData.modifiedCount + tutorsData.modifiedCount
+            });
+        })
+
+        app.patch('/bookings/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const { status } = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const update = { $set: { status } };
+            const result = await studentBookingCollection.updateOne(filter, update);
+            res.json(result);
+        })
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
