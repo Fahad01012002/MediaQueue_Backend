@@ -25,7 +25,36 @@ const client = new MongoClient(uri, {
     }
 });
 
+const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`));
 
+const middleware = async (req, res, next) => {
+    const authHeader = req?.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({
+            message: 'Unauthorized access'
+        })
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({
+            message: 'Unauthorized access'
+        })
+    }
+
+    try {
+        const { payLoad } = await jwtVerify(token, JWKS);
+        next();
+
+    } catch (error) {
+        return res.status(403).json({
+            message: 'Forbidden access'
+        })
+    }
+
+}
 
 const run = async () => {
     try {
@@ -34,7 +63,6 @@ const run = async () => {
         const tutorsCollection = db.collection("tutors");
         const studentTutotrsCollection = db.collection('studentTutors');
         const studentBookingCollection = db.collection('bookingTutors');
-
 
         app.get('/tutors' , async (req, res) => {
             const result = await tutorsCollection.find().toArray();
@@ -48,6 +76,7 @@ const run = async () => {
             res.send(result);
         });
 
+        app.get('/my-tutors', async (req, res) => {
             const result = await studentTutotrsCollection.find().toArray();
             res.send(result);
         })
@@ -109,7 +138,7 @@ const run = async () => {
             const update = { $set: { status } };
             const result = await studentBookingCollection.updateOne(filter, update);
             res.json(result);
-        });
+        })
 
         app.post('/tutors', async (req, res) => {
             const tutors = req.body;
@@ -132,6 +161,7 @@ const run = async () => {
             res.send(result);
         })
 
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
@@ -143,3 +173,5 @@ const run = async () => {
         console.log(error);
     }
 }
+
+run().catch(console.dir);
