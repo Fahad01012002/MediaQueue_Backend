@@ -117,6 +117,15 @@ const run = async () => {
             res.send(result);
         });
 
+        app.post('/my-tutors', async (req, res) => {
+            const myTutors = req.body;
+            if (myTutors._id) {
+                myTutors._id = new ObjectId(myTutors._id);
+            }
+            const result = await studentTutotrsCollection.insertOne(myTutors);
+            res.send(result);
+        });
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
