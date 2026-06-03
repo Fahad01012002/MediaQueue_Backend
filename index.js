@@ -36,6 +36,18 @@ const run = async () => {
         const studentBookingCollection = db.collection('bookingTutors');
 
 
+        app.get('/tutors' , async (req, res) => {
+            const result = await tutorsCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.get('/tutors/:id' , async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await tutorsCollection.findOne(query);
+            res.send(result);
+        });
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
