@@ -76,6 +76,18 @@ const run = async () => {
             });
         });
 
+        app.patch('/tutors/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+
+            const tutor = await tutorsCollection.findOne(filter);
+            const currentSlot = parseInt(tutor.totalSlot);
+
+            const update = { $set: { totalSlot: currentSlot - 1 } };
+            const result = await tutorsCollection.updateOne(filter, update);
+            res.send(result);
+        });
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
