@@ -126,6 +126,12 @@ const run = async () => {
             res.send(result);
         });
 
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            const result = await studentBookingCollection.insertOne(booking);
+            res.send(result);
+        })
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
