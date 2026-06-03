@@ -48,6 +48,24 @@ const run = async () => {
             res.send(result);
         });
 
+            const result = await studentTutotrsCollection.find().toArray();
+            res.send(result);
+        })
+
+        app.get('/my-tutors/user/:userId', middleware, async (req, res) => {
+            const { userId } = req.params;
+            const query = { userId: userId };
+            const result = await studentTutotrsCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.get('/bookings/:studentId', middleware, async (req, res) => {
+            const { studentId } = req.params;
+            const query = { studentId: studentId };
+            const result = await studentBookingCollection.find(query).toArray();
+            res.send(result);
+        })
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
