@@ -66,6 +66,16 @@ const run = async () => {
             res.send(result);
         })
 
+        app.delete('/my-tutors/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const myTutorResult = await studentTutotrsCollection.deleteOne(query);
+            const tutorResult = await tutorsCollection.deleteOne(query);
+            res.json({
+                deletedCount: myTutorResult.deletedCount + tutorResult.deletedCount
+            });
+        });
+
         app.listen(PORT, () => {
             console.log(`Simple CRUD server is running on port ${PORT}`);
         })
